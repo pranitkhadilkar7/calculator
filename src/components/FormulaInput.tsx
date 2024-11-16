@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { createLatexString, getVariablesFromFormula } from "../common/utils";
 
 export function FormulaInput() {
   const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
@@ -10,10 +11,9 @@ export function FormulaInput() {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
-      const parsedFormula = formula.replace(/\^([a-zA-Z0-9]+)/g, (_, exp) => {
-        return `<sup>${exp}</sup>`;
-      });
-      const formattedFormula = parsedFormula.replace(/\*/g, "⋅");
+      const variables = getVariablesFromFormula(formula);
+      console.log(variables);
+      const formattedFormula = createLatexString(formula);
       setLatexFormula(formattedFormula);
     }, 500);
   }, []);
