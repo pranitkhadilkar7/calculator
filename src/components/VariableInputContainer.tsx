@@ -6,7 +6,7 @@ export function VariableInputContainer() {
   const { variables } = useContext(FormulaContext);
 
   return (
-    <div className="my-8">
+    <div className="my-5">
       {variables.map((variable) => (
         <VariableInput key={variable} variable={variable} />
       ))}
