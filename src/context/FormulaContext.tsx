@@ -2,6 +2,7 @@ import { createContext, useCallback, useMemo, useState } from "react";
 import {
   getVariablesFromFormula,
   isValidFormula as checkFormulaValidity,
+  calculateFormulaValue,
 } from "../common/utils";
 
 type FormulaContextType = {
@@ -11,6 +12,7 @@ type FormulaContextType = {
   variableWithValue: { [key: string]: number };
   updateVariableWithValue: (variable: string, value: number) => void;
   isValidFormula: boolean;
+  formulaResult?: number;
 };
 
 export const FormulaContext = createContext<FormulaContextType>({
@@ -49,6 +51,19 @@ export function FormulaProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const hasValueForAllVariables = useMemo(() => {
+    return variables.every(
+      (variable) => variableWithValue[variable] !== undefined
+    );
+  }, [variableWithValue, variables]);
+
+  const formulaResult = useMemo(() => {
+    if (isValidFormula && formula && hasValueForAllVariables) {
+      return calculateFormulaValue(formula, variableWithValue);
+    }
+    return NaN;
+  }, [isValidFormula, formula, hasValueForAllVariables, variableWithValue]);
+
   return (
     <FormulaContext.Provider
       value={{
@@ -58,6 +73,7 @@ export function FormulaProvider({ children }: { children: React.ReactNode }) {
         variableWithValue,
         updateVariableWithValue,
         isValidFormula,
+        formulaResult,
       }}
     >
       {children}
